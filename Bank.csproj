@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="AccountManager.cs" />
     <Compile Include="BillingAccount.cs" />
     <Compile Include="IPrinter.cs" />
     <Compile Include="Printer.cs" />

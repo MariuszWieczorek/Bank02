@@ -16,26 +16,31 @@ namespace Bank
             Console.WriteLine(author);
             Console.WriteLine();
 
-
-            List<Account> accounts = new List<Account>();
-            accounts.Add(new SavingsAccount(1, "Jan", "Kowalski", 72080408887));
-            accounts.Add(new SavingsAccount(2, "Jan", "Szwagierczak", 72080408887));
-            accounts.Add(new SavingsAccount(3, "Marek", "Nowak", 72080409998));
-            accounts.Add(new BillingAccount(4, "Małgorzata", "Nowakowska", 72080409998));
-            accounts.Add(new BillingAccount(5, "Joanna", "Karbowniczak", 72080409998));
-
-            // dla formalności
-            IEnumerable<Account> account2 = accounts;
+            AccountManager manager = new AccountManager();
+            manager.CreateSavingsAccount("Jan", "Kowalski", 72080408887);
+            manager.CreateSavingsAccount("Jan", "Szwagierczak", 72080408887);
+            manager.CreateSavingsAccount("Marek", "Nowak", 72080409998);
+            manager.CreateBillingAccount("Małgorzata", "Nowakowska", 72080409998);
+            manager.CreateBillingAccount("Joanna", "Karbowniczak", 72080409998);
 
             // Nie przejmując się, która klasa tak naprawdę tym drukowaniem się zajmie.
             // Możemy więc jako typ zmiennej podawać od teraz IPrinter:
             IPrinter printer = new SmallerPrinter();
-            
 
-            foreach(Account x in accounts)
+            IList<Account> accounts = (IList<Account>)manager.GetAllAccounts();
+
+            foreach (Account x in accounts)
             {
                 printer.Print(x);
             }
+
+            // Tworzymy obiekt managera.Dodajemy do niego kilka kont.Następnie bierzemy wszystkie i wypisujemy dane dwóch z nich.
+            // IList<Account> accounts = (IList<Account>)manager.GetAllAccounts();
+            // printer.Print(accounts[0]);
+            // printer.Print(accounts[2]);
+            // Musieliśmy jednak zamienić typ zwracanej listy z IEnumerable na IList ponieważ IEnumerable nie posiada operatora[].
+            // Jednak mogliśmy to tutaj spokojnie zrobić bo wiemy, że pod spodem tak naprawdę jest lista.
+
 
             Console.ReadKey();
         }
