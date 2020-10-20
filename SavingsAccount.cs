@@ -33,5 +33,10 @@ namespace Bank
             return "OSZCZĘDNOŚCIOWE";
         }
 
+
+        public void AddInterest(decimal interest)
+        {
+            Balance += Balance * interest;
+        }
     }
 }

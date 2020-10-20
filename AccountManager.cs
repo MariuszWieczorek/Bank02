@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bank
 {
@@ -16,25 +13,29 @@ namespace Bank
         }
 
 
-         
-        /// <summary>
-        ///     Metoda zwracająca wszystkie konta
-        /// </summary>
-        /// <returns> pełna lista kont </returns>
+        // Metoda zwracająca wszystkie konta
+        // Jak widać skorzystaliśmy tutaj z interfejsu IEnumerable,
+        // ponieważ i tak jakiekolwiek operacje na liście powinniśmy od teraz wykonywać poprzez nasz manager.
+        // Dlatego jedyne do czego potrzebujemy listę kont to wyciągnięcie ich w celu np. wyświetlenia.
         public IEnumerable<Account> GetAllAccounts()
         {
             return _accounts;
         }
-        // Jak widać skorzystaliśmy tutaj z interfejsu IEnumerable,
-        // ponieważ i tak jakiekolwiek operacje na liście powinniśmy od teraz wykonywać poprzez nasz manager.
-        // Dlatego jedyne do czego potrzebujemy listę kont to wyciągnięcie ich w celu np. wyświetlenia.
+        
 
 
-        /// <summary>
-        /// Metoda generująca numer konta
-        /// Gdy Lista jest pusta zwraca najniższy możliwy numer czyli 1
-        /// </summary>
-        /// <returns> zwraca najniższy wolny numer konta </returns>
+        // -----------------------------------------------------------------------------------------------------
+
+        // Metoda generująca numer konta
+        // Gdy Lista jest pusta zwraca najniższy możliwy numer czyli 1
+        // Metoda Any() i Max() należy do biblioetki LINQ
+        // Metoda Max() jako parametr przyjmuje wyrażenie lambda, pozwala ono w prosty sposób przekazać jako parametr funkcję
+        // Max() będzie wykonywała tą przekazaną funkcję dla każdego elementu na liście i dopiero na zwróconych wartościach będzie operować
+        // Wyrażenie przekazane w parametrze wyglądałoby tak jak poniżej jeżeli byśmy chcieli je zapisać jako osobną funkcję:
+        // int Func(Account x)
+        // {
+        //    return x.Id;
+        // }
         private int generateId()
         {
             int id = 1;
@@ -46,16 +47,11 @@ namespace Bank
 
             return id;
         }
-        // Metoda Any() i Max() należy do biblioetki LINQ
-        // Metoda Max() jako parametr przyjmuje wyrażenie lambda, pozwala ono w prosty sposób przekazać jako parametr funkcję
-        // Max() będzie wykonywała tą przekazaną funkcję dla każdego elementu na liście i dopiero na zwróconych wartościach będzie operować
-        //  Wyrażenie przekazane w parametrze wyglądałoby tak jak poniżej jeżeli byśmy chcieli je zapisać jako osobną funkcję:
-        //    int Func(Account x)
-        //     {
-        //        return x.Id;
-        //     }
+
+        // -----------------------------------------------------------------------------------------------------
 
 
+        // Metoda tworząca konto oszczędnościowe
         public SavingsAccount CreateSavingsAccount(string firstName, string lastName, long pesel)
         {
             int id = generateId();
@@ -67,6 +63,9 @@ namespace Bank
             return account;
         }
 
+        // -----------------------------------------------------------------------------------------------------
+
+        // Metoda tworząca konto rozliczeniowe
         public BillingAccount CreateBillingAccount(string firstName, string lastName, long pesel)
         {
             int id = generateId();
@@ -78,8 +77,11 @@ namespace Bank
             return account;
         }
 
+        // -----------------------------------------------------------------------------------------------------
 
 
+        // Metody zwracająca listę kont podanego klienta
+        // Implementacja za pomocą pętli
         public IEnumerable<Account> GetAllAccountsFor1(string firstName, string lastName, long pesel)
         {
             List<Account> customerAccounts = new List<Account>();
@@ -95,12 +97,16 @@ namespace Bank
         }
 
 
+        // Implementacja za pomocą wyrażenia LINQ
         public IEnumerable<Account> GetAllAccountsFor(string firstName, string lastName, long pesel)
         {
             return _accounts.Where(x => x.FirstName == firstName && x.LastName == lastName && x.Pesel == pesel);
         }
 
-
+        // -----------------------------------------------------------------------------------------------------
+       
+        // Metody zwracające pojedyncze konto, gdzie jako paramete podajemy numer tego konta
+        // implemantacja za pomocą pętli
         public Account GetAccount2(string accountNo)
         {
             Account account;
@@ -119,14 +125,85 @@ namespace Bank
         }
 
 
-
+        // implementacja za pomocą wyrażenia LINQ
+        // Tym razem możemy wykorzystać funkcję Single(), która zgodnie z nazwą zwróci dokładnie jeden element z listy. 
         public Account GetAccount(string accountNo)
         {
 
             return _accounts.Single(x => x.AccountNumber == accountNo);
             
         }
-        // . Tym razem możemy wykorzystać funkcję Single(), która zgodnie z nazwą zwróci dokładnie jeden element z listy. 
+
+        // -----------------------------------------------------------------------------------------------------
+
+        //Lista klientów
+        //Rozwiązanie za pomocą Linq. Wykorzystamy tym razem dwie metody: Select() i Distinct()
+        //Select() pozwala wyciągnąć imię, nazwisko i PESEL właściciela każdego konta i zwrócić je jako string, nie zwracając całego konta.
+        //Jako jej parametr przekazujemy funkcję, która zwróci jakąś wartość na podstawie każdego obiektu z listy kont.
+        //Dzięki funkcji Distinct() wszystkie te powtórzenia usuniemy i dostaniemy po jednym elemencie dla każdego klienta 
+        public IEnumerable<string> ListOfCustomers()
+        {
+            return _accounts.Select(a => string.Format("Imię: {0} | Nazwisko: {1} | PESEL: {2}", a.FirstName, a.LastName, a.Pesel)).Distinct();
+        }
+
+
+        // Lista klientów 
+        // Implementacja za pomocą pętli
+        public List<string> ListOfCustomers2()
+        {
+            List<string> klienci = new List<string>();
+            int powt = 0;
+            foreach( var x in _accounts)
+            {
+                string klient = string.Format("Imię: {0} | Nazwisko: {1} | PESEL: {2}", x.FirstName, x.LastName, x.Pesel);
+                powt = 0;
+                foreach(string y in klienci)
+                {
+                    if(y == klient)
+                    {
+                        powt = 1;
+                    }   
+
+                }
+                
+                if(powt==0) 
+                    klienci.Add(klient);
+
+            }
+
+            return klienci;
+        }
+
+
+        // zamknięcie miesiąca
+        // Tutaj z pomocą przyjdzie znowu Linq oraz dodatkowo operator is, 
+        // który pozwala sprawdzić czy jakiś obiekt jest podanego przez nas typu.
+        // Dzięki is możemy sprawdzić czy konto kryjące się pod obiektem klasy bazowej Account jest tak naprawdę typu BillingAccount czy SavingsAccount
+        public void CloseMonth()
+        {
+            foreach (SavingsAccount account in _accounts.Where(x => x is SavingsAccount))
+            {
+                account.AddInterest(0.04M);
+            }
+
+            foreach (BillingAccount account in _accounts.Where(x => x is BillingAccount))
+            {
+                account.TakeCharge(5.0M);
+            }
+        }
+
+
+        public void AddMoney(string accountNo, decimal value)
+        {
+            Account account = GetAccount(accountNo);
+            account.ChangeBalance(value);
+        }
+
+        public void TakeMoney(string accountNo, decimal value)
+        {
+            Account account = GetAccount(accountNo);
+            account.ChangeBalance(-value);
+        }
 
 
     }

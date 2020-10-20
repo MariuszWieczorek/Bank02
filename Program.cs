@@ -18,10 +18,11 @@ namespace Bank
 
             AccountManager manager = new AccountManager();
             manager.CreateSavingsAccount("Jan", "Kowalski", 72080408887);
-            manager.CreateSavingsAccount("Jan", "Szwagierczak", 72080408887);
+            manager.CreateSavingsAccount("Jan", "Szwagierczak", 72080408897);
+            manager.CreateSavingsAccount("Małgorzata", "Nowakowska", 72080409999);
             manager.CreateSavingsAccount("Marek", "Nowak", 72080409998);
-            manager.CreateBillingAccount("Małgorzata", "Nowakowska", 72080409998);
-            manager.CreateBillingAccount("Joanna", "Karbowniczak", 72080409998);
+            manager.CreateBillingAccount("Małgorzata", "Nowakowska", 72080409999);
+            manager.CreateBillingAccount("Joanna", "Karbowniczak", 72080409991);
 
             // Nie przejmując się, która klasa tak naprawdę tym drukowaniem się zajmie.
             // Możemy więc jako typ zmiennej podawać od teraz IPrinter:
@@ -33,6 +34,16 @@ namespace Bank
             {
                 printer.Print(x);
             }
+
+
+
+            IEnumerable<string> users = manager.ListOfCustomers2();
+            Console.WriteLine();
+            foreach (var x in users)
+            {
+                Console.WriteLine(x);
+            }
+
 
             // Tworzymy obiekt managera.Dodajemy do niego kilka kont.Następnie bierzemy wszystkie i wypisujemy dane dwóch z nich.
             // IList<Account> accounts = (IList<Account>)manager.GetAllAccounts();
